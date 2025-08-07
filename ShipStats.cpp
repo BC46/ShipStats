@@ -1,5 +1,5 @@
+#include "ShipStats.h"
 #include "Utils.h"
-#include "Common.h"
 #include <stdio.h>
 
 #define APPEND_XML_IDS_TO_RDL_ADDR 0x57DA40
@@ -30,24 +30,37 @@ inline void AppendXmlWstrToRdl(LPCWSTR wstr, RenderDisplayList& rdl)
     ((AppendXmlWstrToRdlFunc*) APPEND_WSTR_TO_RDL_ADDR)(wstr, wcslen(wstr), rdl, NULL);
 }
 
+void PrintArmorStat(LPWSTR buffer, const Archetype::Ship& shipArch)
+{
+    swprintf(buffer, L"%.0f", shipArch.hitPts);
+}
+
 void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDisplayList& rdl)
 {
+    static const ShipStat shipStats[] =
+    {
+        { L"Armor", PrintArmorStat }
+    };
+
     // Some ships in vanilla FL (e.g. capships) only have a description as infocard, so make sure this is printed.
     if (!shipArch.idsInfo1)
         AppendXmlIdsToRdl(shipArch.idsInfo, rdl);
 
     // TODO: Make overriding existing stats optional.
 
-    wcscpy(FL_BUFFER, L"<RDL><PUSH/><PARA/><JUST loc=\"c\"/><TRA bold=\"true\"/><TEXT>Stats</TEXT><TRA bold=\"false\"/><PARA/><JUST loc=\"l\"/>");
+    LPCWSTR statsHeader =  L"<RDL><PUSH/><PARA/><JUST loc=\"c\"/><TRA bold=\"true\"/><TEXT>Stats</TEXT><TRA bold=\"false\"/><PARA/><JUST loc=\"l\"/><PARA/>";
+    wcscpy(FL_BUFFER, statsHeader);
 
-    wcscat(FL_BUFFER, L"<PARA/><TEXT>Armor: ");
+    WCHAR lineBuffer[128], statBuffer[32];
+    for (int i = 0; i < sizeof(shipStats) / sizeof(shipStats[0]); ++i)
+    {
+        shipStats[i].printStat(statBuffer, shipArch);
+        swprintf(lineBuffer, L"<TEXT>%s: %s</TEXT><PARA/>", shipStats[i].name, statBuffer);
+        wcscat(FL_BUFFER, lineBuffer);
+    }
 
-    WCHAR armor[64];
-    _snwprintf(armor, sizeof(armor) / sizeof(WCHAR), L"%.0f", shipArch.hitPts);
-    wcscat(FL_BUFFER, armor);
-    wcscat(FL_BUFFER, L"</TEXT>");
-
-    wcscat(FL_BUFFER, L"<POP/></RDL>");
+    LPCWSTR statsFooter = L"<POP/></RDL>";
+    wcscat(FL_BUFFER, statsFooter);
 
     AppendXmlWstrToRdl(FL_BUFFER, rdl);
 }
