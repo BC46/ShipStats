@@ -1,34 +1,7 @@
 #include "ShipStats.h"
+#include "Freelancer.h"
 #include "Utils.h"
 #include <stdio.h>
-
-#define APPEND_XML_IDS_TO_RDL_ADDR 0x57DA40
-#define APPEND_WSTR_TO_RDL_ADDR 0x57E2C0
-
-#define MOV_SHIP_INFO_INVENTORY_ADDR 0x47BD41
-
-#define APPEND_SHIP_INFO_INVENTORY_ADDR 0x47C1E2
-
-#define FL_BUFFER ((LPWSTR) 0x66FC60)
-
-LPCWSTR statsHeader = L"<RDL><PUSH/><PARA/><JUST loc=\"c\"/><TRA bold=\"true\"/><TEXT>Stats</TEXT><TRA bold=\"false\"/><PARA/><JUST loc=\"l\"/><PARA/><TEXT>Gun/Turret Mounts: 6/1</TEXT><PARA/><TEXT>Armor: 7900</TEXT><PARA/><TEXT>Cargo Space: 70</TEXT><PARA/><TEXT>Max. Batteries/Nanobots: 49/49</TEXT><PARA/><TEXT>Optimal Weapon Class: 7</TEXT><PARA/><TEXT>Maximum Weapon Class: 9</TEXT><PARA/><TEXT>Additional Equipment: M, CM, CD/T</TEXT><PARA/><POP/></RDL>",
-        armorStatStr = L"Armor: ",
-        cargoSpaceStatStr = L"Cargo Space: ",
-        maxBatBotsStatStr = L"Max. Batteries/Nanobots: ",
-        statStartStr = L"<TEXT>",
-        statEndStr = L"</TEXT><PARA/>";
-
-inline bool AppendXmlIdsToRdl(UINT ids, RenderDisplayList& rdl)
-{
-    typedef bool AppendXmlIdsToRdlFunc(UINT, RenderDisplayList&);
-    return ((AppendXmlIdsToRdlFunc*) APPEND_XML_IDS_TO_RDL_ADDR)(ids, rdl);
-}
-
-inline void AppendXmlWstrToRdl(LPCWSTR wstr, RenderDisplayList& rdl)
-{
-    typedef void AppendXmlWstrToRdlFunc(LPCWSTR, UINT strLen, RenderDisplayList&, DWORD flags);
-    ((AppendXmlWstrToRdlFunc*) APPEND_WSTR_TO_RDL_ADDR)(wstr, wcslen(wstr), rdl, NULL);
-}
 
 void PrintArmorStat(LPWSTR buffer, const Archetype::Ship& shipArch)
 {
@@ -47,7 +20,7 @@ void PrintBatsBotsStat(LPWSTR buffer, const Archetype::Ship& shipArch)
 
 void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDisplayList& rdl)
 {
-    // TODO: Make strings configurable (localizations).
+    // TODO: Make name strings configurable (localizations).
     static const ShipStat shipStats[] =
     {
         { L"Armor", PrintArmorStat },
@@ -59,7 +32,7 @@ void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDispla
     if (!shipArch.idsInfo1)
         AppendXmlIdsToRdl(shipArch.idsInfo, rdl);
 
-    // TODO: Make overriding existing stats optional.
+    // TODO: Make overriding existing hard-coded stat infocards optional.
 
     LPCWSTR statsHeader =  L"<RDL><PUSH/><PARA/><JUST loc=\"c\"/><TRA bold=\"true\"/><TEXT>Stats</TEXT><TRA bold=\"false\"/><PARA/><JUST loc=\"l\"/><PARA/>";
     wcscpy(FL_BUFFER, statsHeader);
@@ -80,6 +53,10 @@ void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDispla
 
 void Init()
 {
+    #define MOV_SHIP_INFO_INVENTORY_ADDR 0x47BD41
+
+    #define APPEND_SHIP_INFO_INVENTORY_ADDR 0x47C1E2
+
     BYTE movEcxEbp[3] = { 0x89, 0xE9, 0x90 };
     Patch(MOV_SHIP_INFO_INVENTORY_ADDR, movEcxEbp, sizeof(movEcxEbp));
 

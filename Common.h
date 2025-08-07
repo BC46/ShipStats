@@ -1,3 +1,6 @@
+#ifndef _COMMON_H_
+#define _COMMON_H_
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -22,3 +25,5 @@ namespace Archetype
         int shieldBatteryLimit; // 0x144
     };
 }
+
+#endif
