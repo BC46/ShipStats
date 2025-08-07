@@ -3,9 +3,16 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "st6.h"
 
 class RenderDisplayList
 {};
+
+struct HpType
+{
+    DWORD id;
+    st6::vector<LPCSTR> hardpoints;
+};
 
 namespace Archetype
 {
@@ -20,7 +27,8 @@ namespace Archetype
         UINT idsInfo3; // 0xF4, stat values
         BYTE xF8[0x8];
         float holdSize; // 0x100
-        BYTE x104[0x3C];
+        BYTE x104[0x2C];
+        st6::vector<HpType> hpTypes; // 0x130
         int nanobotLimit; // 0x140
         int shieldBatteryLimit; // 0x144
     };
