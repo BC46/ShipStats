@@ -27,11 +27,17 @@ inline bool AppendXmlIdsToRdl(UINT ids, RenderDisplayList& rdl)
 inline void AppendXmlWstrToRdl(LPCWSTR wstr, RenderDisplayList& rdl)
 {
     typedef void AppendXmlWstrToRdlFunc(LPCWSTR, UINT strLen, RenderDisplayList&, DWORD flags);
-    ((AppendXmlWstrToRdlFunc*) APPEND_WSTR_TO_RDL_ADDR)(wstr, wcslen(wstr), rdl, 0);
+    ((AppendXmlWstrToRdlFunc*) APPEND_WSTR_TO_RDL_ADDR)(wstr, wcslen(wstr), rdl, NULL);
 }
 
 void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDisplayList& rdl)
 {
+    // Some ships in vanilla FL (e.g. capships) only have a description as infocard, so make sure this is printed.
+    if (!shipArch.idsInfo1)
+        AppendXmlIdsToRdl(shipArch.idsInfo, rdl);
+
+    // TODO: Make overriding existing stats optional.
+
     wcscpy(FL_BUFFER, L"<RDL><PUSH/><PARA/><JUST loc=\"c\"/><TRA bold=\"true\"/><TEXT>Stats</TEXT><TRA bold=\"false\"/><PARA/><JUST loc=\"l\"/>");
 
     wcscat(FL_BUFFER, L"<PARA/><TEXT>Armor: ");
