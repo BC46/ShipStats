@@ -35,11 +35,24 @@ void PrintArmorStat(LPWSTR buffer, const Archetype::Ship& shipArch)
     swprintf(buffer, L"%.0f", shipArch.hitPts);
 }
 
+void PrintCargoSpaceStat(LPWSTR buffer, const Archetype::Ship& shipArch)
+{
+    swprintf(buffer, L"%.0f", shipArch.holdSize);
+}
+
+void PrintBatsBotsStat(LPWSTR buffer, const Archetype::Ship& shipArch)
+{
+    swprintf(buffer, L"%d/%d", shipArch.shieldBatteryLimit, shipArch.nanobotLimit);
+}
+
 void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDisplayList& rdl)
 {
+    // TODO: Make strings configurable (localizations).
     static const ShipStat shipStats[] =
     {
-        { L"Armor", PrintArmorStat }
+        { L"Armor", PrintArmorStat },
+        { L"Cargo Space", PrintCargoSpaceStat },
+        { L"Max. Batteries/Nanobots", PrintBatsBotsStat }
     };
 
     // Some ships in vanilla FL (e.g. capships) only have a description as infocard, so make sure this is printed.
@@ -51,7 +64,7 @@ void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDispla
     LPCWSTR statsHeader =  L"<RDL><PUSH/><PARA/><JUST loc=\"c\"/><TRA bold=\"true\"/><TEXT>Stats</TEXT><TRA bold=\"false\"/><PARA/><JUST loc=\"l\"/><PARA/>";
     wcscpy(FL_BUFFER, statsHeader);
 
-    WCHAR lineBuffer[128], statBuffer[32];
+    WCHAR lineBuffer[128], statBuffer[64];
     for (int i = 0; i < sizeof(shipStats) / sizeof(shipStats[0]); ++i)
     {
         shipStats[i].printStat(statBuffer, shipArch);
