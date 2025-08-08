@@ -42,3 +42,5 @@
 
 # Resource files
 *.res
+
+*.exp

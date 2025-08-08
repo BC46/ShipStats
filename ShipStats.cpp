@@ -2,6 +2,28 @@
 #include "Freelancer.h"
 #include "Utils.h"
 #include <stdio.h>
+#include <set>
+
+void AddHardpointIdsToSet(std::set<UINT> &set, const st6::vector<LPCSTR>& hardpoints)
+{
+    for (UINT i = 0; i < hardpoints.size(); ++i)
+        set.insert(CreateID(hardpoints[i]));
+}
+
+void PrintGunTurretMountsStat(LPWSTR buffer, const Archetype::Ship& shipArch)
+{
+    std::set<UINT> gunMountIds, turretMountIds;
+
+    for (UINT i = 0; i < shipArch.hpTypes.size(); ++i)
+    {
+        if (shipArch.hpTypes[i].id >= HPTYPEID_GUN_SPECIAL_1 && shipArch.hpTypes[i].id <= HPTYPEID_GUN_SPECIAL_10)
+            AddHardpointIdsToSet(gunMountIds, shipArch.hpTypes[i].hardpoints);
+        else if (shipArch.hpTypes[i].id >= HPTYPEID_TURRET_SPECIAL_1 && shipArch.hpTypes[i].id <= HPTYPEID_TURRET_SPECIAL_10)
+            AddHardpointIdsToSet(turretMountIds, shipArch.hpTypes[i].hardpoints);
+    }
+
+    swprintf(buffer, L"%u/%u", gunMountIds.size(), turretMountIds.size());
+}
 
 void PrintArmorStat(LPWSTR buffer, const Archetype::Ship& shipArch)
 {
@@ -23,6 +45,7 @@ void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDispla
     // TODO: Make name strings configurable (localizations).
     static const ShipStat shipStats[] =
     {
+        { L"Gun/Turret Mounts", PrintGunTurretMountsStat },
         { L"Armor", PrintArmorStat },
         { L"Cargo Space", PrintCargoSpaceStat },
         { L"Max. Batteries/Nanobots", PrintBatsBotsStat }
