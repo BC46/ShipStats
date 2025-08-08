@@ -4,6 +4,31 @@
 #include <stdio.h>
 #include <set>
 
+int GetMaximumWeaponClass(const Archetype::Ship& shipArch)
+{
+    int result = 1;
+
+    for (UINT i = 0; i < shipArch.hpTypes.size(); ++i)
+    {
+        if (shipArch.hpTypes[i].id >= HPTYPEID_GUN_SPECIAL_1 && shipArch.hpTypes[i].id <= HPTYPEID_GUN_SPECIAL_10)
+            result = max(result, shipArch.hpTypes[i].id - HPTYPEID_GUN_SPECIAL_1 + 1);
+        else if (shipArch.hpTypes[i].id >= HPTYPEID_TURRET_SPECIAL_1 && shipArch.hpTypes[i].id <= HPTYPEID_TURRET_SPECIAL_10)
+            result = max(result, shipArch.hpTypes[i].id - HPTYPEID_TURRET_SPECIAL_1 + 1);
+    }
+
+    return result;
+}
+
+void PrintOptimalWeaponClassStat(LPWSTR buffer, const Archetype::Ship& shipArch)
+{
+    swprintf(buffer, L"%d", max(GetMaximumWeaponClass(shipArch) - 2, 1));
+}
+
+void PrintMaximumWeaponClassStat(LPWSTR buffer, const Archetype::Ship& shipArch)
+{
+    swprintf(buffer, L"%d", GetMaximumWeaponClass(shipArch));
+}
+
 void AddHardpointIdsToSet(std::set<UINT> &set, const st6::vector<LPCSTR>& hardpoints)
 {
     for (UINT i = 0; i < hardpoints.size(); ++i)
@@ -48,7 +73,9 @@ void AppendShipInfo_Inventory_Hook(const Archetype::Ship& shipArch, RenderDispla
         { L"Gun/Turret Mounts", PrintGunTurretMountsStat },
         { L"Armor", PrintArmorStat },
         { L"Cargo Space", PrintCargoSpaceStat },
-        { L"Max. Batteries/Nanobots", PrintBatsBotsStat }
+        { L"Max. Batteries/Nanobots", PrintBatsBotsStat },
+        { L"Optimal Weapon Class", PrintOptimalWeaponClassStat },
+        { L"Maximum Weapon Class", PrintMaximumWeaponClassStat }
     };
 
     // Some ships in vanilla FL (e.g. capships) only have a description as infocard, so make sure this is printed.
