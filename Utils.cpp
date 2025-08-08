@@ -17,7 +17,7 @@ void Nop(DWORD vOffset, UINT len)
 }
 
 // Adds a jmp or call instruction at a specified address which detours the instruction pointer to arbitrary code
-void Hook(DWORD location, PVOID hookFunc, UINT instrLen, bool jmp = false)
+void Hook(DWORD location, PVOID hookFunc, UINT instrLen, bool jmp)
 {
     BYTE callOpcode = 0xE8, jmpOpcode = 0xE9;
     DWORD relOffset = (DWORD) hookFunc - location - 5;
