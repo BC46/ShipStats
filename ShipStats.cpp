@@ -149,7 +149,7 @@ void Init()
     BYTE movEcxEbp[] = { 0x89, 0xE9, 0x90 };
     BYTE movEdxEbp[] = { 0x89, 0xEA, 0x0F, 0x1F, 0x40, 0x00 };
     BYTE movEdxEdi[] = { 0x89, 0xFA, 0x0F, 0x1F, 0x40, 0x00 };
-    Patch(MOV_SHIP_INFO_INVENTORY_ADDR, movEcxEbp, sizeof(movEcxEbp)); // mov ecx, [ebp+0x18] -> mov ebp, ecx
+    Patch(MOV_SHIP_INFO_INVENTORY_ADDR, movEcxEbp, sizeof(movEcxEbp)); // mov ecx, [ebp+0x18] -> mov ecx, ebp
     Patch(MOV_SHIP_INFO_QUESTION_MARK_DEALER_ADDR, movEdxEbp, sizeof(movEdxEbp)); // mov edx, [ebp+0xF4] -> mov edx, ebp
     Patch(MOV_PLAYER_SHIP_INFO_SHIP_DEALER_ADDR, movEdxEdi, sizeof(movEdxEdi)); // mov edx, [edi+0xF4] -> mov edx, edi
     Patch(MOV_OFFERED_SHIP_INFO_SHIP_DEALER_ADDR, movEdxEdi, sizeof(movEdxEdi)); // mov edx, [edi+0xF4] -> mov edx, edi
