@@ -99,7 +99,7 @@ void AppendShipInfo(const Archetype::Ship& shipArch, RenderDisplayList& rdl, boo
     };
 
     // Some ships in vanilla FL (e.g. capships) only have a description as infocard, so make sure this is printed.
-    if (!shipArch.idsInfo1 && !printStatNames)
+    if (!shipArch.idsInfo1 && printStatNames)
         AppendXmlIdsToRdl(shipArch.idsInfo, rdl);
 
     // TODO: Make overriding existing hard-coded stat infocards optional.
