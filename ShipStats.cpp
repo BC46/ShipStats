@@ -72,10 +72,10 @@ void PrintAdditionalEquipmentStat(LPWSTR buffer, const Archetype::Ship& shipArch
 
     for (UINT i = 0; i < shipArch.hpTypes.size(); ++i)
     {
-        m   |= shipArch.hpTypes[i].id == HPTYPEID_MINE_DROPPER;
-        cm  |= shipArch.hpTypes[i].id == HPTYPEID_COUNTERMEASURE_DROPPER;
-        cd  |= shipArch.hpTypes[i].id == HPTYPEID_TORPEDO_SPECIAL_2;
-        t   |= shipArch.hpTypes[i].id == HPTYPEID_TORPEDO_SPECIAL_1;
+        m   |= (shipArch.hpTypes[i].id == HPTYPEID_MINE_DROPPER);
+        cm  |= (shipArch.hpTypes[i].id == HPTYPEID_COUNTERMEASURE_DROPPER);
+        cd  |= (shipArch.hpTypes[i].id == HPTYPEID_TORPEDO_SPECIAL_2);
+        t   |= (shipArch.hpTypes[i].id == HPTYPEID_TORPEDO_SPECIAL_1);
     }
 
     LPCWSTR mStr = m ? ((cm | cd | t) ? L"M, " : L"M") : L"";

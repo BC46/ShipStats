@@ -3,7 +3,13 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
+#ifdef USE_ST6
 #include "st6.h"
+#else
+#include <vector>
+namespace st6 = std;
+#endif
 
 class RenderDisplayList
 {};
@@ -56,7 +62,6 @@ namespace Archetype
         BYTE xF8[0x8];
         float holdSize; // 0x100
         BYTE x104[0x2C];
-        // TODO: Add ST6 macro.
         st6::vector<HpType> hpTypes; // 0x130
         int nanobotLimit; // 0x140
         int shieldBatteryLimit; // 0x144
